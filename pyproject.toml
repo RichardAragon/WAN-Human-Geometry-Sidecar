@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bgfs"
+version = "0.1.0"
+description = "Body-part Geometry Fixer Sidecar (BGFS) for Wan2.2 video diffusion"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+authors = [{name = "N01ne"}]
+dependencies = [
+  "torch>=2.3.0",
+  "torchvision>=0.18.0",
+  "diffusers>=0.31.0",
+  "transformers>=4.44.0",
+  "accelerate>=0.33.0",
+  "peft>=0.12.0",
+  "safetensors>=0.4.5",
+  "numpy>=1.26.0",
+  "pydantic>=2.7.0",
+  "pyyaml>=6.0.2",
+  "typer>=0.12.0",
+  "tqdm>=4.66.0",
+  "opencv-python>=4.9.0.80",
+  "imageio>=2.34.0",
+  "imageio-ffmpeg>=0.5.1",
+  "av>=12.0.0",
+  "einops>=0.8.0",
+  "scipy>=1.11.0"
+]
+
+[project.optional-dependencies]
+mediapipe = ["mediapipe>=0.10.14"]
+
+[project.scripts]
+bgfs = "bgfs.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["bgfs*"]

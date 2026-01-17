@@ -1,0 +1,32 @@
+data:
+  data_dir: /workspace/data/videos
+  cache_dir: /workspace/cache/bgfs
+  clip_len: 16
+  stride: 8
+  max_videos: 0
+  resize_hw: [512, 512]
+
+roi:
+  region: hands
+  strategy: pose_track
+  margin: 0.35
+  out_hw: [256, 256]
+  min_conf: 0.35
+
+critic:
+  heatmap_sigma: 2.0
+  lr: 0.0003
+  batch_size: 64
+  num_workers: 8
+  kpts: 21
+
+lora:
+  rank: 16
+  alpha: 32
+  dropout: 0.0
+  target_modules: ["to_q", "to_k", "to_v", "to_out"]
+
+train:
+  seed: 123
+  mixed_precision: bf16
+  log_every: 50
