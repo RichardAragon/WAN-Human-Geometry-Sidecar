@@ -1,13 +1,11 @@
-# bgfs/cli.py
 from __future__ import annotations
 
 from pathlib import Path
-
 import typer
 
 from bgfs.config import TrainConfig
 from bgfs.utils.io import load_model_config
-from bgfs.compat import import_module, resolve_callable, call_with_fallback, CompatError
+from bgfs.compat import import_module, resolve_callable, call_with_fallback
 
 app = typer.Typer(add_completion=False, help="BGFS - Body-part Geometry Fixer Sidecar for Wan2.2")
 
@@ -51,15 +49,7 @@ def train_critic_cmd(
     manifest = cfg.data.cache_dir / "manifest.json"
 
     mod = import_module("bgfs.train.train_critic")
-    fn = resolve_callable(
-        mod,
-        candidates=[
-            "train_critic",
-            "train",
-            "fit",
-            "main",
-        ],
-    )
+    fn = resolve_callable(mod, candidates=["train_critic", "train", "fit", "main"])
 
     ckpt = call_with_fallback(fn, cfg, manifest, out_dir, epochs=epochs)
     typer.echo(f"Saved critic: {ckpt}")
@@ -79,26 +69,18 @@ def generate(
 ):
     """Generate a video with Wan."""
     mod = import_module("bgfs.infer.generate_wan")
-    fn = resolve_callable(
-        mod,
-        candidates=[
-            "generate_video",
-            "generate",
-            "run",
-            "main",
-        ],
-    )
+    fn = resolve_callable(mod, candidates=["generate_video", "generate", "run", "main"])
 
-    # Prefer kwargs so we survive signature changes.
+    # Send multiple alias kwargs so we survive minor signature changes.
     call_with_fallback(
         fn,
         model_id=model_id,
         prompt=prompt,
         negative_prompt=negative_prompt,
         out_mp4=out,
-        out=out,  # alternate name
+        out=out,
         image_path=image,
-        image=image,  # alternate name
+        image=image,
         num_frames=num_frames,
         guidance_scale=guidance_scale,
         seed=seed,
@@ -120,32 +102,19 @@ def fix(
 ):
     """Post-hoc latent optimization to improve ROI geometry using the critic and simple kinematic losses."""
     mod = import_module("bgfs.infer.fix_roi")
-    fn = resolve_callable(
-        mod,
-        candidates=[
-            "fix_video_roi",
-            "fix_roi",
-            "fix",
-            "run",
-            "main",
-        ],
+    fn = resolve_callable(mod, candidates=["fix_video_roi", "fix_roi", "fix", "run", "main"])
+
+    call_with_fallback(
+        fn,
+        in_mp4=in_mp4,
+        out_mp4=out_mp4,
+        critic_ckpt=critic_ckpt,
+        critic=critic_ckpt,
+        model_id=model_id,
+        region=region,
+        steps=steps,
+        lr=lr,
+        strength=strength,
     )
-
-    try:
-        call_with_fallback(
-            fn,
-            in_mp4=in_mp4,
-            out_mp4=out_mp4,
-            critic_ckpt=critic_ckpt,
-            critic=critic_ckpt,  # alternate name
-            model_id=model_id,
-            region=region,
-            steps=steps,
-            lr=lr,
-            strength=strength,
-        )
-    except CompatError as e:
-        raise typer.BadParameter(str(e))
-
     typer.echo(f"Wrote: {out_mp4}")
 
