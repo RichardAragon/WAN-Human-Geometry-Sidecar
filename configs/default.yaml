@@ -7,20 +7,20 @@ data:
   resize_hw: [512, 512]
 
 roi:
-  region: hands
+  region: full_body       # ← Change this from 'hands' — critical for butt/lower body coverage
   strategy: pose_track
-  margin: 0.35
+  margin: 0.45            # ← Increase slightly (from 0.35) to capture more around hips/butt without losing focus
   out_hw: [256, 256]
-  min_conf: 0.35
+  min_conf: 0.30          # ← Lower a bit (from 0.35) since butt views might have partial occlusions or lower landmark confidence
 
 critic:
   heatmap_sigma: 2.0
   lr: 0.0003
   batch_size: 64
   num_workers: 8
-  kpts: 21
+  kpts: 33                # ← Important: Change from 21 (hands) to 33 (full body pose landmarks)
 
-lora:
+lora:                     # unchanged, but LoRA targets attention — fine as-is
   rank: 16
   alpha: 32
   dropout: 0.0
