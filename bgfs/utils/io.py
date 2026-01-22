@@ -1,3 +1,4 @@
+# bgfs/utils/io.py
 from __future__ import annotations
 
 import yaml
@@ -26,3 +27,11 @@ def load_config(path: Path, cls: Type[T]) -> T:
 
 def dump_config(cfg: BaseModel) -> Dict[str, Any]:
     return cfg.model_dump(mode="python")
+
+
+def load_model_config(path: Path, cls: Type[T]) -> T:
+    """
+    Backwards-compat wrapper used by CLI.
+    Historically the CLI imported `load_model_config`.
+    """
+    return load_config(path, cls)
